@@ -9,7 +9,7 @@ from jsondaora.deserializers import deserialize_field
 from confdaora.exceptions import ValidationError
 
 
-def confdaora_env(conf_type: Type[Any]) -> DictDaora:
+def from_env(conf_type: Type[Any]) -> DictDaora:
     conf = DictDaora()
 
     for name, type_ in conf_type.__annotations__.items():
@@ -22,7 +22,7 @@ def confdaora_env(conf_type: Type[Any]) -> DictDaora:
             key = name
 
         if is_user_type(type_):
-            conf[name] = confdaora_env(type_)
+            conf[name] = from_env(type_)
             continue
 
         if (
@@ -65,7 +65,7 @@ def confdaora_env(conf_type: Type[Any]) -> DictDaora:
                     )
                     dyn_types[index] = type_index  # type: ignore
 
-            values = [confdaora_env(dtype) for dtype in dyn_types.values()]
+            values = [from_env(dtype) for dtype in dyn_types.values()]
             conf[name] = values
             continue
 

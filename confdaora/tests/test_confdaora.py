@@ -4,7 +4,7 @@ import pytest
 from dictdaora import DictDaora
 
 import confdaora.confdaora
-from confdaora.confdaora import confdaora_env
+from confdaora.confdaora import from_env
 from confdaora.exceptions import ValidationError
 
 
@@ -26,7 +26,7 @@ def test_should_set_env_vars_with_different_types(fake_os):
     }
     expected_config = {'fake_int': 10, 'fake_str': 'string', 'fake_float': 0.1}
 
-    assert confdaora_env(FakeConfig) == expected_config
+    assert from_env(FakeConfig) == expected_config
 
 
 def test_should_set_env_vars_with_prefix(fake_os):
@@ -37,7 +37,7 @@ def test_should_set_env_vars_with_prefix(fake_os):
     fake_os.environ = {'FAKE_INTEGER': '10'}
     expected_config = {'integer': 10}
 
-    assert confdaora_env(FakeConfig) == expected_config
+    assert from_env(FakeConfig) == expected_config
 
 
 def test_should_set_env_vars_on_dataclass(fake_os):
@@ -47,7 +47,7 @@ def test_should_set_env_vars_on_dataclass(fake_os):
     fake_os.environ = {'INTEGER': '10'}
     expected_config = {'integer': 10}
 
-    assert confdaora_env(FakeConfig) == expected_config
+    assert from_env(FakeConfig) == expected_config
 
 
 def test_should_set_env_vars_with_nested_config(fake_os):
@@ -75,7 +75,7 @@ def test_should_set_env_vars_with_nested_config(fake_os):
         'fake2': {'string': 'str', 'fake3': {'numbers': [0.1, 0.2, 0.3]}},
     }
 
-    assert confdaora_env(FakeConfig) == expected_config
+    assert from_env(FakeConfig) == expected_config
 
 
 def test_should_set_env_vars_with_list_user_type(fake_os):
@@ -102,7 +102,7 @@ def test_should_set_env_vars_with_list_user_type(fake_os):
     ]
     expected_config = {'integer': 10, 'fake2': expected_fake2}
 
-    assert confdaora_env(FakeConfig) == expected_config
+    assert from_env(FakeConfig) == expected_config
 
 
 def test_should_raise_validation_error_required_field(fake_os):
@@ -113,7 +113,7 @@ def test_should_raise_validation_error_required_field(fake_os):
     fake_os.environ = {}
 
     with pytest.raises(ValidationError) as exc_info:
-        confdaora_env(FakeConfig)
+        from_env(FakeConfig)
 
     assert exc_info.value.args == ('required field: name=integer',)
 
@@ -125,4 +125,4 @@ def test_should_use_default_value(fake_os):
 
     fake_os.environ = {}
 
-    assert confdaora_env(FakeConfig) == {'integer': 10}
+    assert from_env(FakeConfig) == {'integer': 10}
